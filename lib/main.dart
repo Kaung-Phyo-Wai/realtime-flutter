@@ -21,7 +21,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final refDatabase = FirebaseDatabase.instance.reference();
+  final ref = FirebaseDatabase.instance.reference();
+  var data;
+  @override
+  void initState() async {
+    // TODO: implement initState
+    super.initState();
+    data = await ref.child('EC').once().then((value) => value.value);
+  }
 
   // firebase.database().ref('ReferernceName').once('value',   function(snapshot) {
   //   snapshot.forEach(function(childSnapshot) {
@@ -38,30 +45,33 @@ class _MyAppState extends State<MyApp> {
     'username': 'Kaung',
     'message': 'askdfa',
     'photourl': 'https:// etc',
-    'time': DateTime.now(),
+    'time': DateTime.now().millisecondsSinceEpoch.toString(),
     'uid': '12q12312323',
     'videourl': 'https:// .... ',
   };
   @override
   Widget build(BuildContext context) {
-    final ref = refDatabase;
     return MaterialApp(
       home: Scaffold(
         body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               RaisedButton(
                 onPressed: () async {
-                  await ref.child('EC').push().set(message);
                   print('1');
-                  // await ref
-                  //     .once()
-                  //     .then((value) => print('Data: ${value.value}'));
-                  //     var topUserPostsRef = ref.child("EC").child(path)
-                  // print('2');
+
+                  data =
+                      await ref.child('EC').once().then((value) => value.value);
+                  String nextObjectname = data.length.toString();
+                  await ref.child('EC').child(nextObjectname).set(message);
+                  // .once()
+                  // .then((value) => print('Data: ${value.value}'));
+                  // var topUserPostsRef = ref.child("EC").child(path)
+                  print('2');
                 },
               ),
-              Text('hello'),
+              Text(data.toString()),
             ],
           ),
         ),
